@@ -10,6 +10,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Platform,
 } from "react-native";
 import { theme } from "./colors";
 import { Feather } from "@expo/vector-icons";
@@ -83,19 +84,30 @@ export default function App() {
     setEditText("");
   };
   const deleteToDo = (key) => {
-    Alert.alert("Delete To Do", "Are you ", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Sure",
-        style: "destructive",
-        onPress: () => {
-          const newToDos = { ...toDos };
-          delete newToDos[key];
-          setToDos(newToDos);
-          saveToDos(newToDos);
+    if (Platform.OS === "web") {
+      const ok = confirm("Delete To Do");
+
+      if (ok) {
+        const newToDos = { ...toDos };
+        delete newToDos[key];
+        setToDos(newToDos);
+        saveToDos(newToDos);
+      }
+    } else {
+      Alert.alert("Delete To Do", "Are you ", [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Sure",
+          style: "destructive",
+          onPress: () => {
+            const newToDos = { ...toDos };
+            delete newToDos[key];
+            setToDos(newToDos);
+            saveToDos(newToDos);
+          },
         },
-      },
-    ]);
+      ]);
+    }
   };
   return (
     <AnimatedColorView
@@ -148,6 +160,7 @@ export default function App() {
             placeholder={working ? "Add a To Do" : "Where do you want to go?"}
             style={{
               ...styles.input,
+              zIndex: 1,
               backgroundColor: working ? theme.whiteLight : theme.blackLight,
               color: working ? theme.blackLight : theme.whiteLight,
             }}
